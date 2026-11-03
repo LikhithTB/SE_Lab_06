@@ -1,0 +1,35 @@
+### pytest
+============================= test session starts =============================
+platform win32 -- Python 3.10.7, pytest-8.4.1, pluggy-1.5.0 -- C:\Users\likhi\AppData\Local\Programs\Python\Python310\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\likhi\Downloads\Lab_6\L6_L7_04_shipping_quotation\Lab 6
+plugins: anyio-4.6.2.post1, Faker-25.2.0
+collecting ... collected 17 items
+
+test_shipping_quote.py::test_single_ground_shipment PASSED               [  5%]
+test_shipping_quote.py::test_non_list_shipments_raises PASSED            [ 11%]
+test_shipping_quote.py::test_negative_handling_fee_raises PASSED         [ 17%]
+test_shipping_quote.py::test_unapproved_manifest_is_skipped PASSED       [ 23%]
+test_shipping_quote.py::test_air_shipment_uses_air_rate PASSED           [ 29%]
+test_shipping_quote.py::test_unknown_mode_is_rejected PASSED             [ 35%]
+test_shipping_quote.py::test_zero_weight_parcel_is_rejected_but_others_billed PASSED [ 41%]
+test_shipping_quote.py::test_hazmat_non_fragile_adds_flat_fifty PASSED   [ 47%]
+test_shipping_quote.py::test_hazmat_fragile_zeroes_shipment_and_stops_billing_packages PASSED [ 52%]
+test_shipping_quote.py::test_heavy_package_gets_surcharge_rate PASSED    [ 58%]
+test_shipping_quote.py::test_express_priority_multiplies_by_1_25 PASSED  [ 64%]
+test_shipping_quote.py::test_more_than_three_rejected_parcels_is_flagged PASSED [ 70%]
+test_shipping_quote.py::test_no_shipments_returns_no_cargo PASSED        [ 76%]
+test_shipping_quote.py::test_monitor_no_data_for_empty_input PASSED      [ 82%]
+test_shipping_quote.py::test_monitor_detects_two_consecutive_low_readings PASSED [ 88%]
+test_shipping_quote.py::test_monitor_single_low_reading_is_not_a_leak_and_resets_streak PASSED [ 94%]
+test_shipping_quote.py::test_monitor_stable_when_all_readings_normal PASSED [100%]
+
+============================= 17 passed in 0.14s ==============================
+
+### coverage run (line)
+Name                     Stmts   Miss  Cover   Missing
+------------------------------------------------------
+shipping_quote.py           53      0   100%
+test_shipping_quote.py      69      0   100%
+------------------------------------------------------
+TOTAL                      122      0   100%
