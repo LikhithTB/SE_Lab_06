@@ -151,3 +151,110 @@ def test_monitor_single_low_reading_is_not_a_leak_and_resets_streak():
 
 def test_monitor_stable_when_all_readings_normal():
     assert monitor_container_pressures([[15, 16, 14.5]]) == "STABLE"
+
+
+# =====================================================================
+# Branch coverage: decision outcomes not yet asserted by the tests above
+# (defaults, boundaries, loop exits, and the "else" side of each if)
+# =====================================================================
+
+# ---------- process_shipments: default values (missing keys) ----------
+
+def test_missing_mode_defaults_to_ground():
+    # no "mode" key -> ground rate 4.0 -> 10 kg = 40
+    shipment = {"manifest_approved": True, "packages": [{"weight_kg": 10}]}
+    result = process_shipments([shipment], 0.0)
+    assert result["total_quote"] == 40.0
+
+
+def test_missing_manifest_defaults_to_skipped():
+    shipment = {"mode": "ground", "packages": [{"weight_kg": 10}]}
+    result = process_shipments([shipment], 0.0)
+    assert result == {"total_quote": 0.0, "status": "NO_CARGO"}
+
+
+def test_missing_packages_bills_only_handling_fee():
+    # no "packages" key -> package loop never runs -> cost = handling fee
+    shipment = {"manifest_approved": True}
+    result = process_shipments([shipment], 15.0)
+    assert result == {"total_quote": 15.0, "status": "CLEARED"}
+
+
+# ---------- process_shipments: boundaries ----------
+
+def test_zero_handling_fee_is_accepted():
+    # fee == 0 is not < 0, so no ValueError
+    assert process_shipments([], 0) == {"total_quote": 0.0, "status": "NO_CARGO"}
+
+
+def test_weight_exactly_30_uses_base_rate():
+    # 30 is not > 30 -> 30 * 4.0 = 120
+    result = process_shipments([make_shipment(packages=[{"weight_kg": 30}])], 0.0)
+    assert result["total_quote"] == 120.0
+
+
+def test_weight_just_over_30_uses_surcharge_rate():
+    # 30.5 > 30 -> 30.5 * (4.0 * 1.5) = 183
+    result = process_shipments([make_shipment(packages=[{"weight_kg": 30.5}])], 0.0)
+    assert result["total_quote"] == 183.0
+
+
+def test_exactly_three_rejected_parcels_is_not_flagged():
+    # 3 is not > 3 -> normal CLEARED status
+    shipments = [make_shipment(
+        packages=[{"weight_kg": 0}, {"weight_kg": 0},
+                  {"weight_kg": 0}, {"weight_kg": 10}],
+    )]
+    result = process_shipments(shipments, 0.0)
+    assert result == {"total_quote": 40.0, "status": "CLEARED"}
+
+
+def test_flagged_review_takes_priority_over_no_cargo():
+    # four unknown-mode shipments: rejected = 4 (flagged) even though total is 0
+    shipments = [make_shipment(mode="sea") for _ in range(4)]
+    result = process_shipments(shipments, 0.0)
+    assert result == {"total_quote": 0.0, "status": "FLAGGED_REVIEW"}
+
+
+# ---------- process_shipments: package-level else paths ----------
+
+def test_hazmat_with_zero_weight_is_rejected_only_once():
+    # weight check runs before hazmat check, so the parcel is counted once.
+    # 10 kg ground = 40 billed; rejected count = 1 -> CLEARED
+    shipments = [make_shipment(packages=[{"weight_kg": 0, "is_hazmat": True},
+                                         {"weight_kg": 10}])]
+    result = process_shipments(shipments, 0.0)
+    assert result == {"total_quote": 40.0, "status": "CLEARED"}
+
+
+def test_fragile_non_hazmat_package_is_billed_normally():
+    # the fragile rule only applies to hazmat parcels
+    shipments = [make_shipment(is_fragile=True, packages=[{"weight_kg": 10}])]
+    result = process_shipments(shipments, 0.0)
+    assert result["total_quote"] == 40.0
+
+
+# ---------- monitor_container_pressures: boundaries and loop exits ----------
+
+def test_monitor_exactly_14_psi_is_not_low():
+    # 14.0 is not < 14.0, so only the two 13.9 readings form a streak of 2
+    assert monitor_container_pressures([[14.0, 13.9, 13.9]]) == "LEAK_DETECTED"
+
+
+def test_monitor_all_readings_at_threshold_is_stable():
+    assert monitor_container_pressures([[14.0, 14.0, 14.0]]) == "STABLE"
+
+
+def test_monitor_streak_must_be_consecutive():
+    # low readings are separated by normal readings -> never 2 in a row
+    assert monitor_container_pressures([[13, 15, 13, 15, 13]]) == "STABLE"
+
+
+def test_monitor_leak_found_in_second_container():
+    # first container is clean, so the outer loop must continue to the next one
+    assert monitor_container_pressures([[15, 15], [13, 12]]) == "LEAK_DETECTED"
+
+
+def test_monitor_empty_container_is_skipped():
+    assert monitor_container_pressures([[], [15]]) == "STABLE"
+    assert monitor_container_pressures([[]]) == "STABLE"

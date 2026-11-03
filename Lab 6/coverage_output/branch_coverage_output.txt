@@ -1,0 +1,50 @@
+### pytest
+============================= test session starts =============================
+platform win32 -- Python 3.10.7, pytest-8.4.1, pluggy-1.5.0 -- C:\Users\likhi\AppData\Local\Programs\Python\Python310\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\likhi\Downloads\Lab_6\L6_L7_04_shipping_quotation\Lab 6
+plugins: anyio-4.6.2.post1, Faker-25.2.0
+collecting ... collected 32 items
+
+test_shipping_quote.py::test_single_ground_shipment PASSED               [  3%]
+test_shipping_quote.py::test_non_list_shipments_raises PASSED            [  6%]
+test_shipping_quote.py::test_negative_handling_fee_raises PASSED         [  9%]
+test_shipping_quote.py::test_unapproved_manifest_is_skipped PASSED       [ 12%]
+test_shipping_quote.py::test_air_shipment_uses_air_rate PASSED           [ 15%]
+test_shipping_quote.py::test_unknown_mode_is_rejected PASSED             [ 18%]
+test_shipping_quote.py::test_zero_weight_parcel_is_rejected_but_others_billed PASSED [ 21%]
+test_shipping_quote.py::test_hazmat_non_fragile_adds_flat_fifty PASSED   [ 25%]
+test_shipping_quote.py::test_hazmat_fragile_zeroes_shipment_and_stops_billing_packages PASSED [ 28%]
+test_shipping_quote.py::test_heavy_package_gets_surcharge_rate PASSED    [ 31%]
+test_shipping_quote.py::test_express_priority_multiplies_by_1_25 PASSED  [ 34%]
+test_shipping_quote.py::test_more_than_three_rejected_parcels_is_flagged PASSED [ 37%]
+test_shipping_quote.py::test_no_shipments_returns_no_cargo PASSED        [ 40%]
+test_shipping_quote.py::test_monitor_no_data_for_empty_input PASSED      [ 43%]
+test_shipping_quote.py::test_monitor_detects_two_consecutive_low_readings PASSED [ 46%]
+test_shipping_quote.py::test_monitor_single_low_reading_is_not_a_leak_and_resets_streak PASSED [ 50%]
+test_shipping_quote.py::test_monitor_stable_when_all_readings_normal PASSED [ 53%]
+test_shipping_quote.py::test_missing_mode_defaults_to_ground PASSED      [ 56%]
+test_shipping_quote.py::test_missing_manifest_defaults_to_skipped PASSED [ 59%]
+test_shipping_quote.py::test_missing_packages_bills_only_handling_fee PASSED [ 62%]
+test_shipping_quote.py::test_zero_handling_fee_is_accepted PASSED        [ 65%]
+test_shipping_quote.py::test_weight_exactly_30_uses_base_rate PASSED     [ 68%]
+test_shipping_quote.py::test_weight_just_over_30_uses_surcharge_rate PASSED [ 71%]
+test_shipping_quote.py::test_exactly_three_rejected_parcels_is_not_flagged PASSED [ 75%]
+test_shipping_quote.py::test_flagged_review_takes_priority_over_no_cargo PASSED [ 78%]
+test_shipping_quote.py::test_hazmat_with_zero_weight_is_rejected_only_once PASSED [ 81%]
+test_shipping_quote.py::test_fragile_non_hazmat_package_is_billed_normally PASSED [ 84%]
+test_shipping_quote.py::test_monitor_exactly_14_psi_is_not_low PASSED    [ 87%]
+test_shipping_quote.py::test_monitor_all_readings_at_threshold_is_stable PASSED [ 90%]
+test_shipping_quote.py::test_monitor_streak_must_be_consecutive PASSED   [ 93%]
+test_shipping_quote.py::test_monitor_leak_found_in_second_container PASSED [ 96%]
+test_shipping_quote.py::test_monitor_empty_container_is_skipped PASSED   [100%]
+
+============================= 32 passed in 0.14s ==============================
+
+### coverage run --branch (branch)
+Name                     Stmts   Miss Branch BrPart  Cover   Missing
+--------------------------------------------------------------------
+shipping_quote.py           53      0     36      0   100%
+test_shipping_quote.py     116      0      0      0   100%
+--------------------------------------------------------------------
+TOTAL                      169      0     36      0   100%
